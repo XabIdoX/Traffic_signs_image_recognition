@@ -1,0 +1,132 @@
+#!/usr/bin/python3.7
+
+
+import glob2
+import numpy as np
+from PIL import Image
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+import tensorflow as tf
+
+def Import_X(files):
+    t=[]
+    for file in files:
+        t.append(np.array(Image.open(file).resize((100,100))))
+    return t
+
+
+
+
+def Y_Transformation (files):
+    t=[]
+    for file in files:
+        if("0_vitesse_limitee_20" in file):
+            x=0
+        elif("1_vitesse_limitee_30" in file):
+            x=1
+        elif("2_vitesse_limitee_50" in file):
+            x=2
+        elif("3_vitesse_limitee_60" in file):
+            x=3
+        elif("4_vitesse_limitee_70" in file):
+            x=4
+        elif("5_vitesse_limitee_80" in file):
+            x=5
+        elif("6_fin_vitesse_limitee_80" in file):
+            x=6
+        elif("7_vitesse_limitee_100" in file):
+            x=7
+        elif("8_vitesse_limitee_120" in file):
+            x=8
+        elif("9_interdiction_de_depasser" in file):
+            x=9
+        elif("10_interdiction_de_depasserPL" in file):
+            x=10
+        elif("11_petite_route_prio" in file):
+            x=11
+        elif("12_route_prio" in file):
+            x=12
+        elif("13_cedez_passage" in file):
+            x=13
+        elif("14_stop" in file):
+            x=14
+        elif("15_circulation_interdite_2sens" in file):
+            x=15
+        elif("16_acces_interdit_pl" in file):
+            x=16       
+        elif("17_sens_interdit" in file):
+            x=17
+        elif("18_danger" in file):
+            x=18
+        elif("19_virage_g" in file):
+            x=19
+        elif("20_virage_d" in file):
+            x=20
+        elif("21_virages_g" in file):
+            x=21
+        elif("22_dos_ane" in file):
+            x=22
+        elif("23_chaussee_glissante" in file):
+            x=23
+        elif("24_retrecissement_d" in file):
+            x=24
+        elif("25_travaux" in file):
+            x=25
+        elif("26_feux" in file):
+            x=26
+        elif("27_pietons" in file):
+            x=27
+        elif("28_enfants" in file):
+            x=28
+        elif("29_velos" in file):
+            x=29
+        elif("30_neige" in file):
+            x=30
+        elif("31_animaux_sauvages" in file):
+            x=31
+        elif("32_fin_interdictions" in file):
+            x=32
+        elif("33_obligation_d" in file):
+            x=33
+        elif("34_obligation_g" in file):
+            x=34
+        elif("35_obligation_tout_droit" in file):
+            x=35
+        elif("36_obligation_tout_droit_droite" in file):
+            x=36
+        elif("37_obligation_tout_droit_gauche" in file):
+            x=37
+        elif("38_contournement_d" in file):
+            x=38
+        elif("39_contournement_g" in file):
+            x=39
+        elif("40_rond_point" in file):
+            x=40
+        elif("41_fin_inter_depasser" in file):
+            x=41
+        elif("42_fin_inter_depasser_pl" in file):
+            x=42
+        t.append([x])
+    return t
+    
+model=tf.keras.models.load_model("/Users/mai2011428/Ter/Test4_15epoch_b150/model.h5")
+model.compile(loss='categorical_crossentropy', optimizer=tf.keras.optimizers.Adam(),metrics=['accuracy'])
+
+files = glob2.glob("/Users/mai2011428/Ter/Test_Google/*.jpg")
+
+
+X=np.array(Import_X(files))
+Y=Y_Transformation(files)
+
+
+c=0
+for i in range (len(X)):
+    im=X[i]
+    im = np.reshape(im,[1,100,100,3])
+    im=im/1
+    if(Y[i]==[model.predict_classes(im)]):
+        c=c+1
+    else:
+      print("BarisTata n'a pas reconnu ===>",files[i])
+print(c,"/",len(X))
+
